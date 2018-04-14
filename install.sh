@@ -110,13 +110,13 @@ trap 'err_report $LINENO' ERR
 ############################################
 
 old_cleanup() {
-  log "[0/6] Cleaning up old installation files"
+  log "[0/7] Cleaning up old installation files"
   sudo rm -rf ./Autolab
   sudo rm -rf ./Tango
 }
 
 environment_setup() {
-  log "[1/6] Installing docker and docker-compose"
+  log "[1/7] Installing docker and docker-compose"
 
   if [[ "$OSTYPE" == "darwin"* ]]; then
     command -v docker ps >/dev/null 2>&1 || { echo "Autolab on OS X requires Docker. Please install it from https://docs.docker.com/engine/installation/mac/ Aborting." >&2; exit 1; }
@@ -128,19 +128,19 @@ environment_setup() {
     curl -sSL https://get.docker.com/ | sh
     #install docker-compose
     pip install docker-compose
-    log "[1/6] Done"
+    log "[1/7] Done"
   fi
 }
 
 source_file_download() {
-  log "[2/6] Downloading source file..."
+  log "[2/7] Downloading source file..."
   git clone https://github.com/autolab/Tango.git
   git clone https://github.com/autolab/Autolab
-  log "[2/6] Done"
+  log "[2/7] Done"
 }
 
 copy_config() {
-  log "[3/6] Copying config files..."
+  log "[3/7] Copying config files..."
 
   cp ../cover/start.sh ./Tango/start.sh
   cp ../cover/Dockerfile ./Autolab/Dockerfile
@@ -160,31 +160,38 @@ copy_config() {
   cp ./configs/production.rb ./Autolab/config/environments/production.rb
   cp ./Autolab/config/school.yml.template ./Autolab/config/school.yml
 
-  log "[3/6] Done"
+  log "[3/7] Done"
 }
 
 
 make_volumes() {
-  log "[4/6] make volumes..."
+  log "[4/7] make volumes..."
 
   mkdir ./Autolab/courses
   sudo chown -R 9999:9999 Autolab/courses
   # create attachements folder
   mkdir ./Autolab/attachments
-  log "[4/6] Done"
+  log "[4/7] Done"
 }
 
 init_docker() {
-  log "[5/6] Init docker images and containers..."
+  log "[5/7] Init docker images and containers..."
 
   docker-compose up -d
   sleep 10
-  log "[5/6] Done"
+  log "[5/7] Done"
 }
 
+init_certbot() {
+  log "[6/7] Init certbot..."
+
+  docker-compose run --rm web certbot --nginx -d autolab.ufscar.br
+
+  log "[6/7] Done"
+}
 
 init_database() {
-  log "[6/6] Init database..."
+  log "[7/7] Init database..."
 
   docker-compose run --rm -e RAILS_ENV=production web rake db:create
   docker-compose run --rm -e RAILS_ENV=production web rake db:migrate
@@ -193,7 +200,7 @@ init_database() {
   cp -r ./Autolab/examples/hello/ ./Autolab/courses/AutoPopulated/hello/
   chown -R 9999:9999 ./Autolab/courses/AutoPopulated/hello
 
-  log "[6/6] Done"
+  log "[7/7] Done"
 }
 
 congrats() {
@@ -216,5 +223,6 @@ source_file_download
 copy_config
 make_volumes
 init_docker
+init_certbot
 init_database
 congrats
