@@ -185,7 +185,7 @@ init_docker() {
 init_certbot() {
   log "[6/7] Init certbot..."
 
-  docker-compose run --rm web certbot --nginx -d autolab.ufscar.br
+  docker-compose exec web certbot --nginx -d autolab.ufscar.br
 
   log "[6/7] Done"
 }
