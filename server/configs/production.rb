@@ -80,13 +80,9 @@ Autolab3::Application.configure do
 
   # Use a custom smtp server, like Mandrill
   config.action_mailer.smtp_settings = {
-    address:              ENV['EMAIL_SERVICE_API_ADDRESS'],
-    port:                 ENV['EMAIL_SERVICE_PORT'],
-    enable_starttls_auto: true,
-    authentication:       'login',
-    user_name:            ENV['EMAIL_SERVICE_USER_NAME'],
-    password:             ENV['EMAIL_SERVICE_API_KEY'],
-    domain:               ENV['HOSTNAME'],
+    address:              '172.17.0.1',
+    port:                 25,
+    domain:               'autolab.ufscar.br',
   }
 
   config.middleware.use ExceptionNotification::Rack,
