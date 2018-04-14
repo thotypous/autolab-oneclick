@@ -63,5 +63,12 @@ RUN mkdir -p /home/app/webapp/log && \
 WORKDIR /home/app/webapp
 RUN RAILS_ENV=production bundle exec rake assets:precompile
 
+# Let's Encrypt
+RUN add-apt-repository ppa:certbot/certbot && \
+  apt-get update && \
+  apt-get install python-certbot-nginx && \
+  certbot register --agree-tos -m admin@autolab.ufscar.br && \
+  certbot --nginx
+
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
