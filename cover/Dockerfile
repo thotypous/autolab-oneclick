@@ -7,7 +7,7 @@
 #     https://github.com/phusion/passenger-docker
 #
 #
-FROM phusion/passenger-ruby22:0.9.15
+FROM phusion/passenger-ruby22:0.9.30
 
 MAINTAINER Autolab Development Team "autolab-dev@andrew.cmu.edu"
 
@@ -26,6 +26,10 @@ ADD docker/nginx.conf /etc/nginx/sites-enabled/webapp.conf
 
 # Prepare folders
 RUN mkdir /home/app/webapp
+
+# Add tzdata
+RUN apt-get update && \
+  apt-get install -y tzdata
 
 # Run Bundle in a cache efficient way
 WORKDIR /tmp
