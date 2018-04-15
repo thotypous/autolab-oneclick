@@ -73,5 +73,31 @@ RUN add-apt-repository ppa:certbot/certbot && \
   apt-get install -y python-certbot-nginx && \
   certbot register --agree-tos -m root@autolab.ufscar.br
 
+# Shibboleth
+ADD docker/ngx_http_shibboleth_module.so /usr/lib/ngx_http_shibboleth_module.so
+
+RUN apt-get install -y ca-certificates shibboleth-sp2-utils supervisor && \
+  mkdir -p /var/log/shibboleth && \
+  chown -R _shibd:_shibd /var/log/shibboleth && \
+  echo "load_module /usr/lib/ngx_http_shibboleth_module.so;" > /etc/nginx/main.d/shib.conf
+
+ADD docker/shib.conf /etc/supervisor/conf.d/shib.conf
+
+ADD docker/attribute-map.xml /etc/shibboleth/attribute-map.xml
+ADD docker/shibboleth2.xml /etc/shibboleth/shibboleth2.xml
+
+ADD docker/sp-key.pem /etc/shibboleth/sp-key.pem
+ADD docker/sp-cert.pem /etc/shibboleth/sp-cert.pem
+RUN chown _shibd:_shibd /etc/shibboleth/*.pem && \
+  chmod 0600 /etc/shibboleth/sp-key.pem && \
+  chmod 0644 /etc/shibboleth/sp-cert.pem
+
+RUN mkdir -p /etc/service/shibd && \
+  echo -e '#!/bin/sh\nset -e\nexec /usr/bin/chpst -u _shibd:_shibd /usr/sbin/shibd -F -f -c /etc/shibboleth/shibboleth2.xml' > /etc/service/shibd/run && \
+  chmod +x /etc/service/shibd/run && \
+  mkdir -p /etc/service/supervisor && \
+  echo -e '#!/bin/sh\nset -e\nexec /usr/bin/python /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf' > /etc/service/supervisor/run && \
+  chmod +x /etc/service/supervisor/run
+
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

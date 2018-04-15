@@ -135,12 +135,14 @@ environment_setup() {
 source_file_download() {
   log "[2/7] Downloading source file..."
   git clone https://github.com/autolab/Tango.git
-  git clone https://github.com/autolab/Autolab
+  git clone https://github.com/thotypous/Autolab
   log "[2/7] Done"
 }
 
 copy_config() {
   log "[3/7] Copying config files..."
+
+  cp ./prebuilt/ngx_http_shibboleth_module.so ./Autolab/docker/ngx_http_shibboleth_module.so
 
   cp ../cover/start.sh ./Tango/start.sh
   cp ../cover/Dockerfile ./Autolab/Dockerfile
@@ -159,6 +161,11 @@ copy_config() {
   cp ./configs/nginx.conf ./Autolab/docker/nginx.conf
   cp ./configs/production.rb ./Autolab/config/environments/production.rb
   cp ./Autolab/config/school.yml.template ./Autolab/config/school.yml
+
+  cp ./configs/attribute-map.xml ./Autolab/docker/attribute-map.xml
+  cp ./configs/shibboleth2.xml ./Autolab/docker/shibboleth2.xml
+  cp ./configs/sp-key.pem ./Autolab/docker/sp-key.pem
+  cp ./configs/sp-cert.pem ./Autolab/docker/sp-cert.pem
 
   log "[3/7] Done"
 }
