@@ -77,8 +77,8 @@ RUN add-apt-repository ppa:certbot/certbot && \
 ADD docker/ngx_http_shibboleth_module.so /usr/lib/ngx_http_shibboleth_module.so
 
 RUN apt-get install -y ca-certificates shibboleth-sp2-utils supervisor && \
-  mkdir -p /var/log/shibboleth && \
-  chown -R _shibd:_shibd /var/log/shibboleth && \
+  mkdir -p /var/log/shibboleth /var/run/shibboleth && \
+  chown -R _shibd:_shibd /var/log/shibboleth /var/run/shibboleth && \
   echo "load_module /usr/lib/ngx_http_shibboleth_module.so;" > /etc/nginx/main.d/shib.conf
 
 ADD docker/shib.conf /etc/supervisor/conf.d/shib.conf
@@ -93,10 +93,10 @@ RUN chown _shibd:_shibd /etc/shibboleth/*.pem && \
   chmod 0644 /etc/shibboleth/sp-cert.pem
 
 RUN mkdir -p /etc/service/shibd && \
-  echo -e '#!/bin/sh\nset -e\nexec /usr/bin/chpst -u _shibd:_shibd /usr/sbin/shibd -F -f -c /etc/shibboleth/shibboleth2.xml' > /etc/service/shibd/run && \
+  echo '#!/bin/sh\nset -e\nexec /usr/bin/chpst -u _shibd:_shibd /usr/sbin/shibd -F -f -c /etc/shibboleth/shibboleth2.xml' > /etc/service/shibd/run && \
   chmod +x /etc/service/shibd/run && \
   mkdir -p /etc/service/supervisor && \
-  echo -e '#!/bin/sh\nset -e\nexec /usr/bin/python /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf' > /etc/service/supervisor/run && \
+  echo '#!/bin/sh\nset -e\nexec /usr/bin/python /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf' > /etc/service/supervisor/run && \
   chmod +x /etc/service/supervisor/run
 
 # Clean up APT when done.
