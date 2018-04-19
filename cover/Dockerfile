@@ -99,5 +99,16 @@ RUN mkdir -p /etc/service/shibd && \
   echo '#!/bin/sh\nset -e\nexec /usr/bin/python /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf' > /etc/service/supervisor/run && \
   chmod +x /etc/service/supervisor/run
 
+# UTF-8 Locale - https://stackoverflow.com/a/46531235
+RUN export DEBIAN_FRONTEND=noninteractive; \
+  apt-get update -q -q && \
+  apt-get install --yes locales && \
+  locale-gen --no-purge en_US.UTF-8 && \
+  update-locale LANG=en_US.UTF-8 && \
+  echo locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8 | debconf-set-selections && \
+  echo locales locales/default_environment_locale select en_US.UTF-8 | debconf-set-selections && \
+  dpkg-reconfigure locales
+ENV LANG en_US.UTF-8
+
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
