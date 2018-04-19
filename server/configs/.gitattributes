@@ -1,3 +1,4 @@
 sp-key.pem filter=git-crypt diff=git-crypt
 devise.rb filter=git-crypt diff=git-crypt
 production.rb filter=git-crypt diff=git-crypt
+mossnet filter=git-crypt diff=git-crypt

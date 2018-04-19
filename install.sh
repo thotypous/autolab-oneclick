@@ -162,6 +162,8 @@ copy_config() {
   cp ./configs/production.rb ./Autolab/config/environments/production.rb
   cp ./Autolab/config/school.yml.template ./Autolab/config/school.yml
 
+  cp ./configs/mossnet ./Autolab/docker/mossnet
+
   cp ./configs/attribute-map.xml ./Autolab/docker/attribute-map.xml
   cp ./configs/shibboleth2.xml ./Autolab/docker/shibboleth2.xml
   cp ./configs/sp-key.pem ./Autolab/docker/sp-key.pem

@@ -99,6 +99,9 @@ RUN mkdir -p /etc/service/shibd && \
   echo '#!/bin/sh\nset -e\nexec /usr/bin/python /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf' > /etc/service/supervisor/run && \
   chmod +x /etc/service/supervisor/run
 
+# MOSS
+ADD docker/mossnet /home/app/webapp/vendor/
+
 # UTF-8 Locale - https://stackoverflow.com/a/46531235
 RUN export DEBIAN_FRONTEND=noninteractive; \
   apt-get update -q -q && \
